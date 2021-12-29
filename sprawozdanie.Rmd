@@ -1,0 +1,40 @@
+---
+title: "SAD - sprawozdanie 2"
+author: "Marcel Kawski, Jakub Frydrych"
+date: "29.12.2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+Ładowanie bibliotek:
+
+```{r message=FALSE}
+library(dplyr)
+library(zoo)
+```
+
+## Problem 1.
+
+Przetwarzanie danych z pliku csv:
+
+```{r}
+path <- '~/Desktop/projekt2/mathematical-statistics/data/katastrofy.csv'
+data <- read.csv(path, header = TRUE, fill = TRUE)
+data$Date <- as.Date(data$Date, "%m/%d/%Y")
+data %>% mutate(qtr=as.yearqtr(Date)) %>% count(qtr) -> data
+```
+
+Liczba katastrof w kolejnych kwartałach lat 1908-2009 przedstawiona na wykresie:
+
+```{r}
+plot(n ~ qtr, data, type='h', main='Katastrofy w kwartalach lat 
+     1908-2009', xlab='kwartal', ylab='liczba katastrof')
+```
+
+```{r}
+lambda <- mean(data$n)
+probs <- dpois(1:length(data$qtr), lambda=lambda)
+chisq.test(x=data$n, p=probs, rescale.p=TRUE)
+```
